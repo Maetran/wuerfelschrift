@@ -1,0 +1,50 @@
+<!DOCTYPE html><html>
+    <head>
+        <meta charset="utf-8">
+        <title>Würfelschrift</title>
+        <link rel="stylesheet" href="stylesheet_ws.css">
+        <script src="./ws.js"></script>
+        <script src="./jquery-3.6.1.min.js"></script>
+    </head>
+    <body>  
+        <div class="upperStuff">
+            <div class="containerLeft"> <!-- create dice field -->
+                <div id="diceContainer" class="allDice">
+                    <img id="wuerfelEins" src="one.png" alt="wuerfel1"><br>
+                    <img id="wuerfelZwei" src="two.png" alt="wuerfel2"><br>
+                    <img id="wuerfelDrei" src="three.png" alt="wuerfel3"><br>
+                    <img id="wuerfelVier" src="four.png" alt="wuerfel4"><br>
+                    <img id="wuerfelFuenf" src="five.png" alt="wuerfel5"><br>
+                </div>
+            </div>
+            <div class="containerMidLeft"> <!-- create user buttons -->
+                <input id="knopf1" type="button" value="Würfeln"><br><br>
+                <input id="knopf2" type="button" value="Gset"><br><br>
+            </div>
+            <div class="containerPlayerOne"> <!-- create user 1 table -->
+                <p id="namePlayer1"></p>
+                <table id="punkteTabelle0">
+                    <script>
+                        createTable()
+                    </script>
+                </table>
+            </div>
+            <div class="containerPlayerTwo"> <!-- create user 2 table -->
+                <p id="namePlayer2"></p>
+                <table id="punkteTabelle1">
+                    <script>
+                        createTable()
+                    </script>
+                </table>
+            </div>
+        </div>
+    </body>
+    <script>
+        const gameValues = init();                          // creates gameValues and makes them accessable global
+        const wuerfelIDs = getWuerfelIDs();                 // apply dice ID's to DOM
+        newRoll()                                           // new dice roll on reload of the page
+        registerHoldListener();                             // creates listener for click on dice to hold / unhold
+        registerButtonListerner();                          // creates listener for buttons in UI
+        tableClickListener();                               // creates listener for table
+    </script>
+</html>
