@@ -57,6 +57,48 @@
     border-collapse: separate;
 }
 
+th
+{
+    background-color: lightgrey
+}
+
+#text
+{
+    background-color: lightgrey
+}
+
+td[id$="zs"]
+{
+    background-color: lightgrey;
+}
+
+td[id$="bs"]
+{
+    background-color: lightgrey;
+}
+
+td[id$="to"]
+{
+    background-color: lightgrey;
+}
+
+td[id$="dif"]
+{
+    background-color: lightgrey;
+}
+
+td[id$="tu"]
+{
+    background-color: lightgrey;
+}
+
+td[id$="gsu"]
+{
+    background-color: lightgrey;
+    font-weight: bold;
+    color: red;
+}
+
 #namePlayer1
 {
     border: 2px solid rgb(52, 30, 153);

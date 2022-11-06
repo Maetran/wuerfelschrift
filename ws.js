@@ -87,7 +87,7 @@ function createTable()
     document.write("<tr>")
     reihen.forEach((x) => document.write("<th>"+x[0]+"</th>"));
     document.write("</tr>")
-    list.forEach((x) => document.write("<tr><td id=text-"+x[0]+" class=locked>"+x[0]+"</td>"+
+    list.forEach((x) => document.write("<tr><td id=text class=locked>"+x[0]+"</td>"+
                 "<td id=achi-"+x[1]+" class=unlocked></td>"+
                 "<td id=frei-"+x[1]+" class=unlocked></td>"+
                 "<td id=aui-"+x[1]+" class=unlocked></td>"+
