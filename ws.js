@@ -21,6 +21,7 @@ function init()
                 "round":0,
                 "angesagt":false,
                 "gesagterWurf":0,
+                "letzterWurf":[],
                 "wurfel": [
                     {"augenzahl": 1, "hold": false}, // dice 1-6
                     {"augenzahl": 2, "hold": false}, 
@@ -37,6 +38,7 @@ function init()
                 "round":0,
                 "angesagt":false,
                 "gesagterWurf":0,
+                "letzterWurf":[],
                 "wurfel": [
                     {"augenzahl": 1, "hold": false}, // dice 1-6
                     {"augenzahl": 1, "hold": false},
@@ -105,6 +107,7 @@ function newRoll()
     {
         for(let i=0; i<5; i++)
         {
+            gameValues.player[playerID].letzterWurf = [];
             let newWuerfel = parseInt(Math.random() * 6 + 1);
             gameValues.player[playerID].wurfel[i].augenzahl = newWuerfel;
             assignNewPic(i, newWuerfel);
@@ -116,19 +119,38 @@ function newRoll()
 function rollUnholdDice()
 {
     let playerID = getCurrentPlayer();
-    if (gameValues.player[playerID].nrRoll < 2){
-        (gameValues.player[playerID].wurfel).forEach((a,i) => {
-            if(a.hold == false)
-            {
-                a.augenzahl = parseInt(Math.random() * 6 + 1);
-                assignNewPic(i,a.augenzahl);
-            }
-        });
-        console.log("Roll Nummer "+ (gameValues.player[playerID].nrRoll+2))
-        gameValues.player[playerID].nrRoll += 1;
-        applyGameValuesToUi();
+    gameValues.player[playerID].letzterWurf = []
+    gameValues.player[playerID].wurfel.forEach(x=>gameValues.player[playerID].letzterWurf.push(x.augenzahl));
+    if(gameValues.player[playerID].round!=47){
+        if (gameValues.player[playerID].nrRoll < 2){
+            (gameValues.player[playerID].wurfel).forEach((a,i) => {
+                if(a.hold == false)
+                {
+                    a.augenzahl = parseInt(Math.random() * 6 + 1);
+                    assignNewPic(i,a.augenzahl);
+                }
+            });
+            console.log("Roll Nummer "+ (gameValues.player[playerID].nrRoll+2))
+            gameValues.player[playerID].nrRoll += 1;
+            applyGameValuesToUi();
+        }
+        else (alert("du kannst nicht mehr würfeln"));
     }
-    else (alert("du kannst nicht mehr würfeln"));
+    else{
+        if (gameValues.player[playerID].nrRoll < 4){
+            (gameValues.player[playerID].wurfel).forEach((a,i) => {
+                if(a.hold == false)
+                {
+                    a.augenzahl = parseInt(Math.random() * 6 + 1);
+                    assignNewPic(i,a.augenzahl);
+                }
+            });
+            console.log("Roll Nummer "+ (gameValues.player[playerID].nrRoll+2))
+            gameValues.player[playerID].nrRoll += 1;
+            applyGameValuesToUi();
+        }
+        else (alert("spielende"));
+    }
 }
 // changes player, resets counter and passes on to next player
 function nextPlayer()
@@ -137,7 +159,7 @@ function nextPlayer()
     gameValues.player[playerID].wurfel.forEach(x => x.hold=false)
     applyGameValuesToUi(1)
     gameValues.player[playerID].nrRoll = 0;
-    switchCurrentPlayer();
+    // switchCurrentPlayer();
     newRoll();
 }
 
@@ -212,13 +234,11 @@ function computePoints(x)
     diceSet = diceSet.sort();
     console.log(diceSet);
     console.log(clickedArray);
-    // if(row=="gset"&&gameValues.player[playerID].nrRoll===0){console.log("angesagt geht jetzt noch")}
-    // else if(row=="gset"&&gameValues.player[playerID].nrRoll!==0){console.log("angesagt nicht mehr möglich")};
-    // TODO: gewünschten wurf festlegen, andere optionen sperren, max 3 würfe,
     
     let validator = legit(row,field)
+    let validatePoker = legitPoker(field,diceSet)
 
-    if(validator){
+    if(validator&&validatePoker){
         if($("#"+x).attr("class")=="unlocked"){
 
             // zahlen
@@ -264,9 +284,9 @@ function computePoints(x)
                 let count = 0;
                 let validator = null;
                 for(let key in fullTestMap){++count;}
-                if(count==2){
+                if(count==2 || count==1){
                     for(let key in fullTestMap){
-                        if(fullTestMap[key]==2 || fullTestMap[key]==3){
+                        if(fullTestMap[key]==2 || fullTestMap[key]==3 || fullTestMap[key]==5){
                             validator = true;
                             break;
                         }
@@ -279,7 +299,7 @@ function computePoints(x)
                 let add = 0;
                 if (validator){
                     for(let key in fullTestMap){
-                        if(fullTestMap[key]==3){
+                        if(fullTestMap[key]==3 || fullTestMap[key]==5){
                             add = key * 3
                         } 
                     }
@@ -300,9 +320,9 @@ function computePoints(x)
                 let count = 0;
                 let validator = null;
                 for(let key in pokerTestMap){++count;}
-                if(count==2 || count ==1){
+                if(count==2 || count==1){
                     for(let key in pokerTestMap){
-                        if(pokerTestMap[key]==4){
+                        if(pokerTestMap[key]==4||pokerTestMap[key]==5){
                             validator = true;
                             break;
                         }
@@ -429,6 +449,7 @@ function caluclateTotals(clickedArray, x)
     $("#gset-gsu").text(lowerTotal)
 
     gameValues.player[playerID].angesagt = false;
+    gameValues.player[playerID].round += 1;
     // next player
     nextPlayer();
 }
@@ -489,6 +510,28 @@ function legit(row,field)
     else {return false};
 }
 
+function legitPoker(field,diceSet)
+{
+    if(field=="po"){
+        console.log("im baum");
+        let playerID = getCurrentPlayer();
+        let l = gameValues.player[playerID].letzterWurf.sort();
+        let d = diceSet;
+        let l1 = l.slice(0,4);
+        let l2 = l.slice(1,5);
+        let d1 = d.slice(0,4);
+        let d2 = d.slice(1,5);
+        console.log(l1,l1,d1,d2);
+        const equals = (a,b) => JSON.stringify(a) === JSON.stringify(b);
+        if(equals(l1,d1) || equals(l1,d2) || equals(l2,d1) || equals(l2,d2)){
+            alert("du darfst diesen poker nicht mehr schreiben")
+            return false;
+        }
+        else{return true}   
+    }
+    else{return true};
+}
+
 // activates mode "angesagt"
 function said()
 {
@@ -506,12 +549,12 @@ function said()
             }        
         };
         if($("#gset-"+gameValues.player[playerID].gesagterWurf).text()==""){
-            gameValues.player[playerID].angesagt = true;
+            gameValues.player[playerID].angesagt = true
             console.log("angesagt modus AKTIV")
         }
-        else if ($("#gset-"+ags).text()!=NaN){
+        else if($("#gset-"+ags).text()!=NaN){
             console.log("angesagt modus NICHT MÖGLICH")
         }
-    }
     else{alert("das geht nur beim ersten wurf")}
+    }
 }
